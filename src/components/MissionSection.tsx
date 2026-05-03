@@ -1,61 +1,67 @@
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import venueImg from "@/assets/wedding-venu.png";
-
-// 👉 добавь свои картинки в assets
-import ornamentTopRight from "@/assets/ornament-top-right.png";
-import ornamentBottomLeft from "@/assets/ornament-bottom-left.png";
 
 const MissionSection = () => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="relative overflow-hidden bg-gray py-0">
-      <div className="relative h-[60vh] md:h-[70vh] flex items-center justify-center">
-
-        {/* 🎀 декор СПРАВА СВЕРХУ */}
-        <img
-          src={ornamentTopRight}
-          alt=""
-          className="absolute top-4 right-4 w-24 md:w-32 opacity-60 pointer-events-none"
+    <section className="relative h-screen w-full overflow-hidden bg-dark">
+      {/* Black & white video background */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="metadata"
+        className="absolute inset-0 h-full w-full object-cover opacity-60"
+        style={{ filter: "grayscale(100%) contrast(1.1)" }}
+      >
+        <source
+          src="https://videos.pexels.com/video-files/3214448/3214448-uhd_2560_1440_25fps.mp4"
+          type="video/mp4"
         />
+      </video>
 
-        {/* 🎀 декор СЛЕВА СНИЗУ */}
-        <img
-          src={ornamentBottomLeft}
-          alt=""
-          className="absolute bottom-4 left-4 w-24 md:w-32 opacity-60 pointer-events-none"
-        />
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-dark/70 via-dark/40 to-dark/80" />
 
-        {/* Картинка */}
-        <div className="relative w-[450px] md:w-[600px] lg:w-[650px]">
-          <img
-            src={venueImg}
-            alt="Свадебная площадка"
-            className="w-full h-auto object-contain opacity-70"
-            loading="lazy"
-          />
-        </div>
+      {/* Decorative borders */}
+      <motion.div
+        initial={{ scaleX: 0 }}
+        animate={inView ? { scaleX: 1 } : {}}
+        transition={{ duration: 1.5, delay: 0.5 }}
+        className="absolute left-1/2 top-12 h-px w-32 -translate-x-1/2 bg-white/40 origin-center"
+      />
+      <motion.div
+        initial={{ scaleX: 0 }}
+        animate={inView ? { scaleX: 1 } : {}}
+        transition={{ duration: 1.5, delay: 0.5 }}
+        className="absolute bottom-12 left-1/2 h-px w-32 -translate-x-1/2 bg-white/40 origin-center"
+      />
 
-        {/* текст поверх */}
-        <div
-          ref={ref}
-          className="absolute inset-0 flex items-center justify-center px-6 z-10"
+      {/* Text overlay */}
+      <div ref={ref} className="relative z-10 flex h-full items-center justify-center px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 1.4 }}
+          className="max-w-3xl text-center"
         >
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 1.2 }}
-            className="max-w-2xl text-center font-serif text-2xl italic leading-relaxed text-primary-foreground/90 md:text-4xl lg:text-5xl"
+          <motion.span
+            initial={{ opacity: 0, letterSpacing: "0.1em" }}
+            animate={inView ? { opacity: 1, letterSpacing: "0.4em" } : {}}
+            transition={{ duration: 1.6, delay: 0.3 }}
+            className="mb-8 block font-sans text-[10px] uppercase tracking-[0.4em] text-white/70 md:text-xs"
           >
+            — Наша миссия —
+          </motion.span>
+          <p className="font-serif text-3xl italic leading-relaxed text-white md:text-5xl lg:text-6xl">
             Ваше событие — наша миссия. Мы создаём{" "}
-            <span className="text-primary">чувственные торжества</span>,
-            сочетая элегантность и смелые идеи
-          </motion.p>
-        </div>
-
+            <span className="text-primary">чувственные торжества</span>, сочетая
+            элегантность и смелые идеи
+          </p>
+        </motion.div>
       </div>
     </section>
   );
