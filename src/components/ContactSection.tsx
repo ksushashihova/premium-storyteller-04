@@ -10,6 +10,7 @@ const formSchema = z.object({
   date: z.string().optional(),
   budget: z.string().optional(),
   message: z.string().trim().max(1000).optional(),
+  consent: z.literal("on", { errorMap: () => ({ message: "Необходимо согласие на обработку данных" }) }),
   honeypot: z.string().max(0),
 });
 
@@ -130,6 +131,23 @@ const ContactSection = () => {
           <div>
             <textarea name="message" rows={3} placeholder="Сообщение" className={`${inputClass} resize-none`} />
           </div>
+
+          <div className="flex items-start gap-3 pt-2">
+            <input
+              id="consent"
+              type="checkbox"
+              name="consent"
+              className="mt-1 h-4 w-4 shrink-0 cursor-pointer accent-primary"
+            />
+            <label htmlFor="consent" className="font-sans text-xs leading-relaxed text-muted-foreground">
+              Я даю согласие на обработку моих персональных данных в соответствии с{" "}
+              <a href="/privacy" target="_blank" className="text-primary underline-offset-2 hover:underline">
+                Политикой конфиденциальности
+              </a>{" "}
+              и Федеральным законом № 152-ФЗ.
+            </label>
+          </div>
+          {errors.consent && <p className="text-xs text-destructive">{errors.consent}</p>}
 
           {status === "error" && (
             <p className="text-center text-xs text-destructive">Произошла ошибка. Попробуйте позже.</p>
