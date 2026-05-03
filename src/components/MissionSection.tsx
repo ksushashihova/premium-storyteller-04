@@ -18,7 +18,7 @@ const MissionSection = () => {
         style={{ filter: "grayscale(100%) contrast(1.1)" }}
       >
         <source
-          src="https://videos.pexels.com/video-files/3214448/3214448-uhd_2560_1440_25fps.mp4"
+          src="https://assets.mixkit.co/videos/5218/5218-1080.mp4"
           type="video/mp4"
         />
       </video>
