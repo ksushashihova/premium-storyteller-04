@@ -6,7 +6,7 @@ import coupleImg from "@/assets/wedding-couple.jpg";
 import tableImg from "@/assets/wedding-table.jpg";
 import archImg from "@/assets/wedding-arch.jpg";
 import cakeImg from "@/assets/wedding-cake.jpg";
-import venueImg from "@/assets/wedding-venue.jpg";
+import venueImg from "@/assets/wedding-venu.png";
 
 const images = [
   { src: heroImg, alt: "Свадебная церемония", span: "col-span-2 row-span-2" },

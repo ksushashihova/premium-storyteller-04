@@ -29,7 +29,7 @@ const Navigation = () => {
       >
         <div className="container mx-auto flex items-center justify-between px-6">
           <a href="#hero" className="font-serif text-2xl italic text-primary-foreground">
-            Amorette
+            
           </a>
 
           <div className="hidden gap-8 md:flex">
