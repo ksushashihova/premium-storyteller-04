@@ -11,10 +11,10 @@ import venueImg from "@/assets/wedding-venu.png";
 const images = [
   { src: heroImg, alt: "Свадебная церемония", span: "col-span-2 row-span-2" },
   { src: coupleImg, alt: "Пара", span: "row-span-2" },
-  { src: tableImg, alt: "Сервировка", span: "" },
+  { src: tableImg, alt: "Сервировка", span: "row-span-2" },
   { src: archImg, alt: "Арка", span: "col-span-2" },
   { src: cakeImg, alt: "Торт", span: "" },
-  { src: venueImg, alt: "Площадка", span: "col-span-2" },
+  { src: venueImg, alt: "Площадка", span: "col-span-1" },
 ];
 
 const GallerySection = () => {

@@ -18,7 +18,7 @@ const MissionSection = () => {
         style={{ filter: "grayscale(100%) contrast(1.1)" }}
       >
         <source
-          src="https://assets.mixkit.co/videos/5218/5218-1080.mp4"
+          src="https://wedding.spbagency.ru/wp-content/uploads/2021/10/Новый-проект-1.mp4"
           type="video/mp4"
         />
       </video>
