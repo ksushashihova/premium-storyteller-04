@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import heroLeft from "@/assets/hero-left.jpg";
 import heroRight from "@/assets/hero-right.jpg";
+import heroCenter from "@/assets/hero-center.jpg";
+import logo from "@/assets/logo.png";
 import mob from "@/assets/mob.jpg";
 
 const HeroSection = () => {
@@ -27,12 +29,12 @@ const HeroSection = () => {
         {/* Center image panel with text */}
 <div
   className="relative flex h-full flex-1 flex-col items-center justify-center px-6 md:w-[40%] md:flex-none bg-cover bg-center"
-  style={{ backgroundImage: `url(/src/assets/hero-center.jpg)` }}
+  style={{ backgroundImage: `url(${heroCenter})` }}
 >
   <div className="relative z-10 flex flex-col items-center text-center">
     <img
-  src="src/assets/logo.png"
-  alt=""
+  src={logo}
+  alt="Логотип"
   className="hidden md:block h-40 w-auto lg:h-60"
 />
     <motion.h1
@@ -103,8 +105,8 @@ const HeroSection = () => {
   className="absolute left-1 top-1 z-20 md:left-4 md:top-1"
 >
   <img
-    src="src/assets/logo.png"
-    alt=""
+    src={logo}
+    alt="Логотип"
     className="block md:hidden h-20 md:h-20 lg:h-30"
   />
 </motion.div>
