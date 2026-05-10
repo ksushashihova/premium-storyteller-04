@@ -2,6 +2,8 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { z } from "zod";
 import { Check, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   name: z.string().trim().min(2, "Введите имя").max(100),
@@ -21,10 +23,12 @@ const ContactSection = () => {
   const inView = useInView(ref, { once: true, margin: "-100px" });
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const formRef = useRef<HTMLFormElement>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const fd = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const fd = new FormData(form);
     const data = Object.fromEntries(fd.entries()) as Record<string, string>;
 
     const result = formSchema.safeParse(data);
@@ -44,10 +48,21 @@ const ContactSection = () => {
     setStatus("loading");
 
     try {
-      console.log("Form submission:", result.data);
-      await new Promise((r) => setTimeout(r, 1500));
+      const { error } = await supabase.from("leads").insert({
+        name: result.data.name,
+        phone: result.data.phone,
+        email: result.data.email,
+        wedding_date: result.data.date || null,
+        budget: result.data.budget || null,
+        message: result.data.message || null,
+      });
+      if (error) throw error;
+      toast.success("Заявка отправлена!");
+      form.reset();
       setStatus("success");
-    } catch {
+    } catch (err) {
+      console.error(err);
+      toast.error("Ошибка при отправке. Попробуйте позже.");
       setStatus("error");
     }
   };
