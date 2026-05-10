@@ -48,10 +48,21 @@ const ContactSection = () => {
     setStatus("loading");
 
     try {
-      console.log("Form submission:", result.data);
-      await new Promise((r) => setTimeout(r, 1500));
+      const { error } = await supabase.from("leads").insert({
+        name: result.data.name,
+        phone: result.data.phone,
+        email: result.data.email,
+        wedding_date: result.data.date || null,
+        budget: result.data.budget || null,
+        message: result.data.message || null,
+      });
+      if (error) throw error;
+      toast.success("Заявка отправлена!");
+      form.reset();
       setStatus("success");
-    } catch {
+    } catch (err) {
+      console.error(err);
+      toast.error("Ошибка при отправке. Попробуйте позже.");
       setStatus("error");
     }
   };
