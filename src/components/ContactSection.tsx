@@ -2,7 +2,6 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { z } from "zod";
 import { Check, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const formSchema = z.object({
@@ -12,17 +11,27 @@ const formSchema = z.object({
   date: z.string().optional(),
   budget: z.string().optional(),
   message: z.string().trim().max(1000).optional(),
-  consent: z.literal("on", { errorMap: () => ({ message: "Необходимо согласие на обработку данных" }) }),
+  consent: z.literal("on", {
+    errorMap: () => ({ message: "Необходимо согласие на обработку данных" }),
+  }),
   honeypot: z.string().max(0),
 });
 
 type FormData = z.infer<typeof formSchema>;
 
+// dev → localhost:4030, prod → тот же origin (wedding.ksushashi.ru)
+const API_URL =
+  import.meta.env.MODE === "production" ? "" : "http://localhost:4030";
+
 const ContactSection = () => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
-  const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>(
+    {}
+  );
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
   const formRef = useRef<HTMLFormElement>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -48,15 +57,24 @@ const ContactSection = () => {
     setStatus("loading");
 
     try {
-      const { error } = await supabase.from("leads").insert({
-        name: result.data.name,
-        phone: result.data.phone,
-        email: result.data.email,
-        wedding_date: result.data.date || null,
-        budget: result.data.budget || null,
-        message: result.data.message || null,
+      const res = await fetch(`${API_URL}/api/leads`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: result.data.name,
+          phone: result.data.phone,
+          email: result.data.email,
+          wedding_date: result.data.date || null,
+          budget: result.data.budget || null,
+          message: result.data.message || null,
+        }),
       });
-      if (error) throw error;
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || "Failed to submit");
+      }
+
       toast.success("Заявка отправлена!");
       form.reset();
       setStatus("success");
@@ -81,7 +99,9 @@ const ContactSection = () => {
           <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary/20">
             <Check className="h-8 w-8 text-primary" />
           </div>
-          <h2 className="mb-4 font-serif text-3xl italic text-charcoal md:text-4xl">Спасибо!</h2>
+          <h2 className="mb-4 font-serif text-3xl italic text-charcoal md:text-4xl">
+            Спасибо!
+          </h2>
           <p className="font-sans text-sm text-muted-foreground">
             Ваша заявка отправлена. Мы свяжемся с вами в ближайшее время.
           </p>
@@ -115,24 +135,56 @@ const ContactSection = () => {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.3 }}
           onSubmit={handleSubmit}
+          ref={formRef}
           className="mx-auto max-w-lg space-y-6"
         >
-          <input type="text" name="honeypot" className="hidden" tabIndex={-1} autoComplete="off" />
+          <input
+            type="text"
+            name="honeypot"
+            className="hidden"
+            tabIndex={-1}
+            autoComplete="off"
+          />
 
           <div>
-            <input name="name" placeholder="Ваше имя *" className={inputClass} />
-            {errors.name && <p className="mt-1 text-xs text-destructive">{errors.name}</p>}
+            <input
+              name="name"
+              placeholder="Ваше имя *"
+              className={inputClass}
+            />
+            {errors.name && (
+              <p className="mt-1 text-xs text-destructive">{errors.name}</p>
+            )}
           </div>
           <div>
-            <input name="phone" type="tel" placeholder="Телефон *" className={inputClass} />
-            {errors.phone && <p className="mt-1 text-xs text-destructive">{errors.phone}</p>}
+            <input
+              name="phone"
+              type="tel"
+              placeholder="Телефон *"
+              className={inputClass}
+            />
+            {errors.phone && (
+              <p className="mt-1 text-xs text-destructive">{errors.phone}</p>
+            )}
           </div>
           <div>
-            <input name="email" type="email" placeholder="Email *" className={inputClass} />
-            {errors.email && <p className="mt-1 text-xs text-destructive">{errors.email}</p>}
+            <input
+              name="email"
+              type="email"
+              placeholder="Email *"
+              className={inputClass}
+            />
+            {errors.email && (
+              <p className="mt-1 text-xs text-destructive">{errors.email}</p>
+            )}
           </div>
           <div>
-            <input name="date" type="date" placeholder="Дата свадьбы" className={inputClass} />
+            <input
+              name="date"
+              type="date"
+              placeholder="Дата свадьбы"
+              className={inputClass}
+            />
           </div>
           <div>
             <select name="budget" className={inputClass}>
@@ -144,7 +196,12 @@ const ContactSection = () => {
             </select>
           </div>
           <div>
-            <textarea name="message" rows={3} placeholder="Сообщение" className={`${inputClass} resize-none`} />
+            <textarea
+              name="message"
+              rows={3}
+              placeholder="Сообщение"
+              className={`${inputClass} resize-none`}
+            />
           </div>
 
           <div className="flex items-start gap-3 pt-2">
@@ -154,18 +211,30 @@ const ContactSection = () => {
               name="consent"
               className="mt-1 h-4 w-4 shrink-0 cursor-pointer accent-primary"
             />
-            <label htmlFor="consent" className="font-sans text-xs leading-relaxed text-muted-foreground">
-              Я даю согласие на обработку моих персональных данных в соответствии с{" "}
-              <a href="/privacy" target="_blank" className="text-primary underline-offset-2 hover:underline">
+            <label
+              htmlFor="consent"
+              className="font-sans text-xs leading-relaxed text-muted-foreground"
+            >
+              Я даю согласие на обработку моих персональных данных в соответствии
+              с{" "}
+              <a
+                href="/privacy"
+                target="_blank"
+                className="text-primary underline-offset-2 hover:underline"
+              >
                 Политикой конфиденциальности
               </a>{" "}
               и Федеральным законом № 152-ФЗ.
             </label>
           </div>
-          {errors.consent && <p className="text-xs text-destructive">{errors.consent}</p>}
+          {errors.consent && (
+            <p className="text-xs text-destructive">{errors.consent}</p>
+          )}
 
           {status === "error" && (
-            <p className="text-center text-xs text-destructive">Произошла ошибка. Попробуйте позже.</p>
+            <p className="text-center text-xs text-destructive">
+              Произошла ошибка. Попробуйте позже.
+            </p>
           )}
 
           <button
@@ -173,7 +242,9 @@ const ContactSection = () => {
             disabled={status === "loading"}
             className="mx-auto flex items-center gap-2 border border-charcoal bg-charcoal px-10 py-3 font-sans text-xs uppercase tracking-[0.2em] text-primary-foreground transition-all duration-500 hover:bg-transparent hover:text-charcoal disabled:opacity-50"
           >
-            {status === "loading" && <Loader2 className="h-4 w-4 animate-spin" />}
+            {status === "loading" && (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            )}
             Отправить
           </button>
         </motion.form>
