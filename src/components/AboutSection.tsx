@@ -1,7 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import coupleImg from "@/assets/we.jpg";
-import tableImg from "@/assets/wee.jpg";
+import coupleImg from "@/assets/we.webp";
+import tableImg from "@/assets/wee.webp";
 
 const stats = [
   { number: "06", label: "лет в индустрии" },
