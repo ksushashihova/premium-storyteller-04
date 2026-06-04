@@ -15,10 +15,12 @@ const MissionSection = () => {
         playsInline
         preload="metadata"
         className="absolute inset-0 h-full w-full object-cover opacity-60"
-        style={{ filter: "grayscale(100%) contrast(1.1)" }}
+        style={{
+    filter: "grayscale(100%) contrast(1.2) brightness(0.9)"
+  }}
       >
         <source
-          src="https://wedding.spbagency.ru/wp-content/uploads/2021/10/Новый-проект-1.mp4"
+          src="https://static.showit.co/file/qdh5apftSg2y2H7H6qUblw/218747/film_e_and_o.mp4"
           type="video/mp4"
         />
       </video>
