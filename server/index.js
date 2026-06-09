@@ -21,8 +21,25 @@ console.log("Serving static from:", distPath);
 // статика из dist
 app.use(express.static(distPath));
 
-// JSON / CORS
-app.use(cors());
+// JSON / CORS — ограничиваем источники
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGIN || "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      // запросы без Origin (server-to-server, curl) пропускаем
+      if (!origin) return cb(null, true);
+      if (ALLOWED_ORIGINS.length === 0 || ALLOWED_ORIGINS.includes(origin)) {
+        return cb(null, true);
+      }
+      return cb(new Error("Not allowed by CORS"));
+    },
+    methods: ["GET", "POST"],
+  })
+);
 app.use(express.json({ limit: "100kb" }));
 
 // всё, что не /api, отдаём index.html (SPA)
