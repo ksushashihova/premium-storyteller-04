@@ -2,6 +2,14 @@
 import { pool } from "./db.js";
 import fetch from "node-fetch";
 
+// экранируем спецсимволы для Telegram HTML parse_mode
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
