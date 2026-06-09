@@ -21,8 +21,25 @@ console.log("Serving static from:", distPath);
 // статика из dist
 app.use(express.static(distPath));
 
-// JSON / CORS
-app.use(cors());
+// JSON / CORS — ограничиваем источники
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGIN || "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      // запросы без Origin (server-to-server, curl) пропускаем
+      if (!origin) return cb(null, true);
+      if (ALLOWED_ORIGINS.length === 0 || ALLOWED_ORIGINS.includes(origin)) {
+        return cb(null, true);
+      }
+      return cb(new Error("Not allowed by CORS"));
+    },
+    methods: ["GET", "POST"],
+  })
+);
 app.use(express.json({ limit: "100kb" }));
 
 // всё, что не /api, отдаём index.html (SPA)
@@ -90,8 +107,16 @@ app.post("/api/leads", async (req, res) => {
   }
 });
 
-// просмотр лидов (для админки/теста)
-app.get("/api/leads", async (_req, res) => {
+// просмотр лидов — только для админа по секретному ключу
+const requireAdmin = (req, res, next) => {
+  const adminKey = process.env.ADMIN_API_KEY;
+  if (!adminKey || req.headers["x-admin-key"] !== adminKey) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  next();
+};
+
+app.get("/api/leads", requireAdmin, async (_req, res) => {
   try {
     const result = await pool.query(
       `SELECT id, created_at, name, phone, email, wedding_date, budget, message
