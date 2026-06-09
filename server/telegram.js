@@ -38,24 +38,24 @@ export async function notifyAdminsNewWeddingLead(leadId) {
 
     const lines = [
       "💍 Новый свадебный лид:",
-      `ID: ${lead.id}`,
-      `Время: ${lead.created_at.toISOString?.() ?? lead.created_at}`,
-      `Имя: ${lead.name}`,
-      `Телефон: ${lead.phone}`,
-      `Email: ${lead.email}`,
+      `ID: ${escapeHtml(lead.id)}`,
+      `Время: ${escapeHtml(lead.created_at.toISOString?.() ?? lead.created_at)}`,
+      `Имя: ${escapeHtml(lead.name)}`,
+      `Телефон: ${escapeHtml(lead.phone)}`,
+      `Email: ${escapeHtml(lead.email)}`,
     ];
 
     if (lead.wedding_date) {
       const dateStr =
         lead.wedding_date.toISOString?.().slice(0, 10) ?? lead.wedding_date;
-      lines.push(`Дата свадьбы: ${dateStr}`);
+      lines.push(`Дата свадьбы: ${escapeHtml(dateStr)}`);
     }
     if (lead.budget) {
-      lines.push(`Бюджет: ${lead.budget}`);
+      lines.push(`Бюджет: ${escapeHtml(lead.budget)}`);
     }
     if (lead.message) {
       lines.push("");
-      lines.push(`Сообщение: ${lead.message}`);
+      lines.push(`Сообщение: ${escapeHtml(lead.message)}`);
     }
 
     const text = lines.join("\n");
