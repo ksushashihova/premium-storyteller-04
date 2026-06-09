@@ -107,8 +107,16 @@ app.post("/api/leads", async (req, res) => {
   }
 });
 
-// просмотр лидов (для админки/теста)
-app.get("/api/leads", async (_req, res) => {
+// просмотр лидов — только для админа по секретному ключу
+const requireAdmin = (req, res, next) => {
+  const adminKey = process.env.ADMIN_API_KEY;
+  if (!adminKey || req.headers["x-admin-key"] !== adminKey) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  next();
+};
+
+app.get("/api/leads", requireAdmin, async (_req, res) => {
   try {
     const result = await pool.query(
       `SELECT id, created_at, name, phone, email, wedding_date, budget, message
